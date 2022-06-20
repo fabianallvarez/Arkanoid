@@ -7,8 +7,8 @@ class Arkanoid:
     def __init__(self):
         print("arranca el juego")
         pg.init()
-        pg.display.set_mode((ANCHO, ALTO))
-
+        self.display = pg.display.set_mode((ANCHO, ALTO))
+        pg.display.set_caption("Arkanoid BZ version")
     def jugar (self):
         """Este es el bucle principal"""
         salir = False
