@@ -47,7 +47,7 @@ class Portada(Escena):
             self.pantalla.fill((99, 0, 0))
 
             self.pintar_logo()
-            self.pintar_texto()
+            self.pintar_texto() 
 
             pg.display.flip()
 
@@ -58,6 +58,12 @@ class Portada(Escena):
         self.pantalla.blit(self.logo,(pos_x, pos_y))
 
 class Partida(Escena):
+
+    def __init__(self, pantalla: pg.Surface):
+        super().__init__(pantalla)
+        bg_file = os.path.join("resources","images", "background.jpg")
+        self.fondo = pg.image.load(bg_file)
+
     def bucle_principal(self):
         salir = False
         while not salir:
@@ -65,7 +71,11 @@ class Partida(Escena):
                 if event.type == pg.QUIT:
                     salir = True
             self.pantalla.fill((0, 99, 0))
+            self.pintar_fondo()
             pg.display.flip()
+    
+    def pintar_fondo(self):
+        self.pantalla.blit(self.fondo, (0, 0))
 
 class HallOfFane(Escena):
     def bucle_principal(self):
