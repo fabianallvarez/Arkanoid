@@ -13,7 +13,7 @@ class Arkanoid:
         pg.display.set_caption("Arkanoid BZ Version")
 
         icon = pg.image.load(
-            os.path.join("resources", "images", "icon.png"))
+            os.path.join("resources", "images", "ball1.png"))
         pg.display.set_icon(icon)
 
         self.escenas = [
