@@ -81,6 +81,7 @@ class Partida(Escena):
     def bucle_principal(self):
         salir = False
         partida_iniciada = False
+
         while not salir:
             self.reloj.tick(FPS)
 
@@ -99,6 +100,7 @@ class Partida(Escena):
             golpeados = pg.sprite.spritecollide(self.pelotita, self.ladrillos, True)
             if len(golpeados) > 0:
                 self.pelotita.velocidad_y *= -1
+                
                 # con todos los ladrillos golpeados, sumar puntuación correspondiente
 
 
