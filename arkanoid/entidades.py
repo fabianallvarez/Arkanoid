@@ -87,7 +87,19 @@ class Ladrillo(Sprite):
         alto = self.image.get_height()
 
         self.rect = self.image.get_rect(x=columna * ancho, y=fila* alto)
+        """
+    
+class ladrilloR(Sprite):
+    def __init__(self, fila, columna):
+        super().__init__()
 
+        ladrillo_rojo = os.path.join("resources", "images", "redTile.png")
+        self.image = pg.image.load(ladrillo_rojo)
+        ancho = self.image.get_width()
+        alto = self.image.get_height()
+
+        self.rect = self.image.get_rect(x=columna * ancho, y=fila* alto)
+        """
 
 class Pelota(Sprite):
 
