@@ -3,7 +3,7 @@ import os
 import pygame as pg
 
 from . import ALTO, ANCHO, COLOR_FONDO_PORTADA, COLOR_MENSAJE, FPS
-from .entidades import Ladrillo, Pelota, Raqueta
+from .entidades import Ladrillo, Pelota, Raqueta, ladrilloR
 
 
 class Escena:
@@ -98,8 +98,10 @@ class Partida(Escena):
             self.pelotita.update(self.jugador, partida_iniciada)
             self.pelotita.hay_colision(self.jugador)
             golpeados = pg.sprite.spritecollide(self.pelotita, self.ladrillos, True)
-            if len(golpeados) > 0:
-                self.pelotita.velocidad_y *= -1
+            #Ladrillo_rojo = ladrilloR
+            #if len(golpeados) > 0:
+                #self.pelotita.velocidad_y *= -1 and self.Ladrillo_rojo()
+                #False
                 
                 # con todos los ladrillos golpeados, sumar puntuación correspondiente
 
@@ -133,6 +135,14 @@ class Partida(Escena):
                 ladrillo.rect.x += margen_x
                 ladrillo.rect.y += margen_y
                 self.ladrillos.add(ladrillo)
+
+        #for fila in range(num_filas):
+            #for columna in range(num_columnas):
+                #ladrillo_rojo = ladrilloR(fila, columna)
+                #margen_x = (ANCHO - ladrillo_rojo.image.get_width()*num_columnas) / 2
+                #ladrillo_rojo.rect.x += margen_x
+                #ladrillo_rojo.rect.y += margen_y
+                #self.ladrillos.add(ladrillo_rojo)
 
 
 class HallOfFame(Escena):
