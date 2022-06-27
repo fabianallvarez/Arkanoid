@@ -5,6 +5,7 @@ import pygame as pg
 from arkanoid import ALTO, ANCHO
 from arkanoid.escenas import Portada, Partida, HallOfFame
 
+
 class Arkanoid:
     def __init__(self) -> None:
         print("Arranca el juego!!")
@@ -13,7 +14,7 @@ class Arkanoid:
         pg.display.set_caption("Arkanoid BZ Version")
 
         icon = pg.image.load(
-            os.path.join("resources", "images", "ball1.png"))
+            os.path.join("resources", "images", "icon.png"))
         pg.display.set_icon(icon)
 
         self.escenas = [

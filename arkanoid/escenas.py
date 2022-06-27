@@ -2,8 +2,8 @@ import os
 
 import pygame as pg
 
-from . import ALTO, ANCHO, COLOR_FONDO_PORTADA, COLOR_MENSAJE, FPS
-from .entidades import Ladrillo, Pelota, Raqueta, ladrilloR
+from . import ALTO, ANCHO, COLOR_FONDO_PORTADA, COLOR_MENSAJE, FPS, VIDAS
+from .entidades import ContadorVidas, Ladrillo, Marcador, Pelota, Raqueta
 
 
 class Escena:
@@ -44,15 +44,13 @@ class Portada(Escena):
             self.pintar_logo()
             self.pintar_texto()
 
-
-
             pg.display.flip()
 
     def pintar_logo(self):
         ancho_logo = self.logo.get_width()
         pos_x = (ANCHO - ancho_logo) / 2
         pos_y = ALTO / 3
-        self.pantalla.blit(self.logo,(pos_x, pos_y))
+        self.pantalla.blit(self.logo, (pos_x, pos_y))
 
     def pintar_texto(self):
         mensaje = "Pulsa espacio para empezar"
@@ -62,12 +60,15 @@ class Portada(Escena):
         pos_y = .75 * ALTO
         self.pantalla.blit(texto, (pos_x, pos_y))
 
+
 """
 1. Cargar la imagen de fondo en memoria ---- hecho
 2. Creamos una función para "pintar_fondo"
 3. Llamar a la función "pintar_fondo" en el bucle principal para que el
    fondo se pinte
 """
+
+
 class Partida(Escena):
 
     def __init__(self, pantalla: pg.Surface):
@@ -77,72 +78,80 @@ class Partida(Escena):
         self.jugador = Raqueta()
         self.crear_muro()
         self.pelotita = Pelota(midbottom=self.jugador.rect.midtop)
+        self.contador_de_vidas = ContadorVidas(VIDAS)
+        self.marcador = Marcador()
 
     def bucle_principal(self):
         salir = False
-        partida_iniciada = False
-
+        pelota_en_movimiento = False
         while not salir:
+
             self.reloj.tick(FPS)
 
+            ####### COMPROBAR EVENTOS #########
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     pg.quit()
                 if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                    partida_iniciada = True
+                    pelota_en_movimiento = True
 
-            self.pantalla.fill((0, 0, 66))
-            self.pintar_fondo()
-
+            ####### ACTUALIZAR EL ESTADO DE TODOS LOS OBJETOS ########
             self.jugador.update()
-            self.pelotita.update(self.jugador, partida_iniciada)
+            self.pelotita.update(self.jugador, pelota_en_movimiento)
             self.pelotita.hay_colision(self.jugador)
-            golpeados = pg.sprite.spritecollide(self.pelotita, self.ladrillos, True)
-            #Ladrillo_rojo = ladrilloR
-            #if len(golpeados) > 0:
-                #self.pelotita.velocidad_y *= -1 and self.Ladrillo_rojo()
-                #False
-                
+            golpeados = pg.sprite.spritecollide(
+                self.pelotita, self.ladrillos, True)
+
+            if len(golpeados) > 0:
+                self.pelotita.velocidad_y *= -1
                 # con todos los ladrillos golpeados, sumar puntuación correspondiente
+                for ladrillo in golpeados:
+                    self.marcador.aumentar(ladrillo.puntos)
 
+            if len(self.ladrillos.sprites()) == 0:
+                print("El muro ha sido destruido. Contruyendo uno nuevo.")
+                salir = True
 
-            # pintar la raqueta
-            self.pantalla.blit(self.jugador.image, self.jugador.rect)
+            ######## COMPROBAMOS LAS VIDAS Y EL FINAL DE LA PARTIDA ##########
+            if self.pelotita.he_perdido:
+                salir = self.contador_de_vidas.perder_vida()
+                pelota_en_movimiento = False
+                self.pelotita.he_perdido = False
 
-            # pintar el muro
+            ####### PINTAR TODOS LOS OBJETOS Y ACTUALIZAR LA PANTALLA ########
+            self.pintar_fondo()
+            self.pantalla.blit(
+                self.jugador.image, self.jugador.rect)     # RAQUETA
+            # MURO
             self.ladrillos.draw(self.pantalla)
-
-            # pintar la pelota
-            self.pantalla.blit(self.pelotita.image, self.pelotita.rect)
-
+            self.pantalla.blit(
+                self.pelotita.image, self.pelotita.rect)   # PELOTA
+            # MARCADOR
+            self.marcador.pintar(self.pantalla)
+            # VIDAS
+            self.contador_de_vidas.pintar(self.pantalla)
             pg.display.flip()
 
     def pintar_fondo(self):
         self.pantalla.blit(self.fondo, (0, 0))
 
     def crear_muro(self):
-        num_filas = 5
+        num_filas = 1
         num_columnas = 6
         self.ladrillos = pg.sprite.Group()
         self.ladrillos.empty()
 
         margen_y = 40
 
-        for fila in range(num_filas):
+        for fila in range(num_filas):  # 0, 1, 2, 3, 4
+            puntos = (num_filas - fila)*10
             for columna in range(num_columnas):
-                ladrillo = Ladrillo(fila, columna)
-                margen_x = (ANCHO - ladrillo.image.get_width()*num_columnas) / 2
+                ladrillo = Ladrillo(fila, columna, puntos)
+                margen_x = (ANCHO - ladrillo.image.get_width()
+                            * num_columnas) / 2
                 ladrillo.rect.x += margen_x
                 ladrillo.rect.y += margen_y
                 self.ladrillos.add(ladrillo)
-
-        #for fila in range(num_filas):
-            #for columna in range(num_columnas):
-                #ladrillo_rojo = ladrilloR(fila, columna)
-                #margen_x = (ANCHO - ladrillo_rojo.image.get_width()*num_columnas) / 2
-                #ladrillo_rojo.rect.x += margen_x
-                #ladrillo_rojo.rect.y += margen_y
-                #self.ladrillos.add(ladrillo_rojo)
 
 
 class HallOfFame(Escena):
